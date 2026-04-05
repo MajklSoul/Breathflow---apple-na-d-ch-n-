@@ -36,15 +36,6 @@ python3 -m http.server 8080
 
 ---
 
-## 🌐 GitHub Pages
-
-1. Jdi do **Settings → Pages**
-2. Vyber branch `main`, složku `/ (root)`
-3. Klikni **Save**
-4. App bude dostupná na `https://tvuj-username.github.io/breatheflow`
-
----
-
 ## 📁 Struktura
 
 ```
@@ -82,6 +73,3 @@ Císařský tučňák se dokáže ponořit až **500 m** a zadržet dech **22 mi
 
 ---
 
-## 📄 Licence
-
-MIT — volně použitelné, upravitelné, sdílitelné.
