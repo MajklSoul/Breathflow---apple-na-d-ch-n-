@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Breatheflow — učíme tě dýchat. Dechová cvičení od základů až po pokročilé techniky.">
+<title>Breatheflow 1.0.3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--a:#4da8d4;--tl:#7ee8d4;--am:#f0c060;--gn:#5edba0;--mid:#050f1a;--gl:rgba(10,42,61,.52);--gb:rgba(77,168,212,.2);--tb:#e8f4f8;--tm:#8ec8e8;--td:#4a8aaa;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--mid);color:var(--tb);min-height:100vh;overflow-x:hidden;}
+
+.bg{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,#0d3550 0%,#05121e 55%,#020810 100%);z-index:0;}
+.aurora{position:fixed;top:0;left:0;right:0;height:200px;background:linear-gradient(180deg,rgba(0,180,160,.07),rgba(30,120,200,.05) 40%,transparent);animation:aur 14s ease-in-out infinite;z-index:1;pointer-events:none;}
+@keyframes aur{0%,100%{opacity:.5;}50%{opacity:1;}}
+.wvbg{position:fixed;inset:0;z-index:1;pointer-events:none;}
+.wv{position:absolute;border-radius:50%;border:1px solid rgba(77,168,212,.07);transform:translate(-50%,-50%);left:50%;top:50%;animation:bwv 9s ease-in-out infinite;}
+.wv:nth-child(1){width:160px;height:160px;}
+.wv:nth-child(2){width:380px;height:380px;animation-delay:2s;border-color:rgba(77,168,212,.04);}
+.wv:nth-child(3){width:650px;height:650px;animation-delay:4s;border-color:rgba(77,168,212,.02);}
+@keyframes bwv{0%,100%{opacity:.3;transform:translate(-50%,-50%) scale(.97);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.03);}}
+.pts{position:fixed;inset:0;z-index:1;pointer-events:none;}
+.pt{position:absolute;background:rgba(232,244,248,.4);border-radius:50%;animation:pf linear infinite;}
+@keyframes pf{0%{transform:translateY(100vh) scale(0);opacity:0;}10%{opacity:.7;}90%{opacity:.2;}100%{transform:translateY(-20px) translateX(12px) scale(1);opacity:0;}}
+.footer{position:fixed;bottom:10px;left:0;right:0;text-align:center;font-size:10px;color:rgba(77,168,212,.3);letter-spacing:1px;z-index:150;pointer-events:none;display:flex;align-items:center;justify-content:center;gap:10px;}
+.app{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 14px 70px;}
+.scr{display:none;width:100%;max-width:450px;flex-direction:column;align-items:center;animation:fu .35s ease;}
+.scr.on{display:flex;}
+@keyframes fu{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.gl{background:var(--gl);border:1px solid var(--gb);border-radius:20px;backdrop-filter:blur(22px);position:relative;overflow:hidden;}
+.gl::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,244,248,.15),transparent);}
+.pb{width:100%;max-width:450px;height:2px;background:rgba(77,168,212,.1);border-radius:1px;margin-bottom:4px;}
+.pf{height:100%;background:linear-gradient(90deg,#0a2a3d,var(--a));border-radius:1px;transition:width .5s;}
+.brand{font-size:30px;font-weight:300;letter-spacing:5px;text-transform:uppercase;}
+.brand span{color:var(--a);font-weight:700;}
+.sub{font-size:9px;color:var(--td);letter-spacing:3px;text-transform:uppercase;}
+.btn{width:100%;max-width:350px;padding:13px 22px;border-radius:13px;font-family:inherit;font-size:12px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none;outline:none;}
+.btn-p{background:linear-gradient(135deg,rgba(77,168,212,.25),rgba(30,111,163,.35));border:1px solid rgba(77,168,212,.35);color:var(--tb);}
+.btn-p:hover{border-color:rgba(77,168,212,.6);transform:translateY(-1px);}
+.btn-stop{background:rgba(200,70,70,.12);border:1px solid rgba(200,70,70,.28);color:#f08080;}
+.btn-stop:hover{background:rgba(200,70,70,.2);}
+.btn-g{background:transparent;border:1px solid rgba(77,168,212,.15);color:var(--td);font-size:11px;padding:9px 16px;}
+.btn-g:hover{color:var(--tm);border-color:rgba(77,168,212,.3);}
+.btn-navy{background:linear-gradient(135deg,rgba(30,80,30,.4),rgba(20,60,20,.5));border:1px solid rgba(94,219,160,.35);color:var(--gn);letter-spacing:2px;}
+.btn-navy:hover{border-color:rgba(94,219,160,.6);transform:translateY(-1px);}
+.fi{background:rgba(77,168,212,.06);border:1px solid rgba(77,168,212,.17);border-radius:11px;padding:11px 13px;color:var(--tb);font-family:inherit;font-size:14px;outline:none;transition:all .22s;width:100%;}
+.fi:focus{border-color:var(--a);background:rgba(77,168,212,.12);box-shadow:0 0 0 3px rgba(77,168,212,.07);}
+.fi::placeholder{color:rgba(77,168,212,.45);font-style:italic;}
+.fw{margin-bottom:12px;}
+.fl{font-size:9px;color:var(--td);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;display:block;}
+.ph-hint{font-size:10px;color:rgba(77,168,212,.35);letter-spacing:1px;margin-top:4px;font-style:italic;}
+.gg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.gbtn{padding:9px 5px;background:rgba(77,168,212,.04);border:1px solid rgba(77,168,212,.11);border-radius:9px;color:var(--td);font-family:inherit;font-size:13px;cursor:pointer;transition:all .22s;text-align:center;}
+.gbtn.on{background:rgba(77,168,212,.2);border-color:var(--a);color:#b8ddf0;box-shadow:0 0 10px rgba(77,168,212,.16);}
+.exc{display:flex;flex-direction:column;gap:7px;}
+.ec{padding:13px 15px;background:rgba(77,168,212,.04);border:1px solid rgba(77,168,212,.1);border-radius:11px;cursor:pointer;transition:all .22s;position:relative;display:flex;align-items:center;gap:12px;}
+.ec:hover:not(.disabled){background:rgba(77,168,212,.12);border-color:rgba(77,168,212,.3);transform:translateY(-1px);}
+.ec.disabled{opacity:.38;cursor:not-allowed;}
+.ec-icon{font-size:22px;flex-shrink:0;}
+.ec-text{flex:1;}
+.en{font-size:13px;color:var(--tb);font-weight:600;margin-bottom:2px;}
+.ed{font-size:11px;color:var(--td);}
+.ebadge{font-size:8px;letter-spacing:1px;padding:2px 7px;border-radius:4px;}
+.ebadge-avail{background:rgba(77,168,212,.13);color:var(--a);}
+.ebadge-soon{background:rgba(100,100,100,.18);color:#666;}
+.ec-arrow{font-size:14px;color:var(--td);flex-shrink:0;}
+.dots{display:flex;gap:6px;align-items:center;}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(77,168,212,.15);transition:all .35s;}
+.dot.on{background:var(--a);width:18px;border-radius:3px;}
+.bub{background:rgba(77,168,212,.08);border:1px solid rgba(77,168,212,.15);border-radius:12px;padding:11px 16px;font-size:13px;color:var(--tm);text-align:center;line-height:1.6;max-width:280px;}
+.twrap{position:relative;width:210px;height:210px;}
+.tsv{width:100%;height:100%;transform:rotate(-90deg);}
+.trk{fill:none;stroke:rgba(77,168,212,.1);stroke-width:5;}
+.prg{fill:none;stroke:var(--a);stroke-width:5;stroke-linecap:round;stroke-dasharray:659.73;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke .5s;}
+.prg.hl{stroke:var(--tl);filter:drop-shadow(0 0 10px rgba(126,232,212,.55));}
+.prg.ex{stroke:var(--am);}
+.tin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.tnum{font-size:46px;font-weight:300;color:var(--tb);line-height:1;letter-spacing:-2px;}
+.tlbl{font-size:9px;color:var(--td);letter-spacing:2px;text-transform:uppercase;}
+.sgrid4{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;width:100%;}
+.sgrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;width:100%;}
+.sc{background:rgba(77,168,212,.06);border:1px solid rgba(77,168,212,.1);border-radius:11px;padding:11px 7px;text-align:center;}
+.sv{font-size:18px;font-weight:600;color:var(--tb);}
+.sl2{font-size:8px;color:var(--td);letter-spacing:1px;margin-top:2px;}
+.lrow{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:rgba(77,168,212,.04);border-radius:9px;margin-bottom:6px;}
+.lbrow{display:flex;align-items:center;gap:9px;padding:7px 11px;background:rgba(77,168,212,.04);border-radius:8px;margin-bottom:4px;}
+.lbrow.me{background:rgba(77,168,212,.12);border:1px solid rgba(77,168,212,.2);}
+.ff{background:rgba(77,168,212,.06);border:1px solid rgba(77,168,212,.15);border-radius:12px;padding:13px 15px;font-size:13px;color:var(--tm);line-height:1.65;width:100%;}
+.fft{font-size:8px;color:rgba(77,168,212,.5);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+.dive-scene{position:relative;width:100%;height:360px;border-radius:18px;overflow:hidden;}
+.ocean{position:absolute;inset:0;background:linear-gradient(180deg,#071e2e 0%,#0b3c5c 30%,#082c46 65%,#041520 100%);}
+.ray{position:absolute;top:0;width:2px;background:linear-gradient(180deg,rgba(77,168,212,.2),transparent);transform-origin:top center;}
+.dl{position:absolute;left:0;right:0;height:1px;background:rgba(77,168,212,.1);}
+.dlabel{position:absolute;right:12px;font-size:9px;color:rgba(77,168,212,.45);letter-spacing:1px;}
+.dm{position:absolute;left:10px;top:10px;background:rgba(5,15,26,.75);border:1px solid rgba(77,168,212,.22);border-radius:9px;padding:7px 11px;}
+.dmv{font-size:20px;font-weight:300;color:var(--tl);line-height:1;}
+.dml{font-size:8px;color:var(--td);letter-spacing:1px;}
+.bbl{position:absolute;border-radius:50%;border:1px solid rgba(200,240,255,.35);animation:bbl 2.2s ease-out infinite;}
+@keyframes bbl{0%{opacity:0;transform:translateY(0) scale(.5);}30%{opacity:.75;}100%{opacity:0;transform:translateY(-50px) scale(1.3);}}
+@keyframes dv{0%{transform:translateY(0) rotate(0deg);}100%{transform:translateY(300px) rotate(18deg);}}
+.peng-diver{position:absolute;left:50%;top:16px;transform:translateX(-50%);animation:dv linear forwards;}
+.tabs{display:flex;gap:6px;margin-bottom:11px;width:100%;}
+.tab{flex:1;padding:7px;background:rgba(77,168,212,.04);border:1px solid rgba(77,168,212,.09);border-radius:7px;color:var(--td);font-size:10px;cursor:pointer;text-align:center;transition:all .2s;letter-spacing:1px;}
+.tab.on{background:rgba(77,168,212,.14);border-color:var(--a);color:var(--tm);}
+.cwrap{width:100%;height:90px;}
+.orb{width:150px;height:150px;border-radius:50%;border:2px solid rgba(77,168,212,.22);display:flex;align-items:center;justify-content:center;transition:all 1s ease;}
+.orb-c{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,rgba(77,168,212,.38),rgba(30,111,163,.18));transition:all 1s ease;}
+.sndbtn{position:fixed;top:11px;right:14px;z-index:200;background:rgba(10,42,61,.8);border:1px solid rgba(77,168,212,.16);border-radius:10px;min-width:44px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(12px);font-size:9px;letter-spacing:1px;color:rgba(77,168,212,.7);text-transform:uppercase;padding:0 8px;}
+.mood-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:relative;z-index:10;}
+.mood-btn{padding:12px 6px;border-radius:9px;text-align:center;cursor:pointer;font-size:13px;transition:all .22s;border:1px solid transparent;position:relative;z-index:10;user-select:none;}
+.navy-prep{width:100%;padding:22px 20px;}
+.navy-title{font-size:11px;color:rgba(94,219,160,.6);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+.navy-body{font-size:14px;color:var(--tm);line-height:1.72;margin-bottom:20px;}
+.navy-benefits{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:4px;}
+.navy-benefits li{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--tm);line-height:1.55;}
+.navy-benefits li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gn);flex-shrink:0;margin-top:5px;}
+.countdown-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,15,26,.82);border-radius:16px;z-index:20;gap:10px;}
+.countdown-num{font-family:'Oswald','Impact',sans-serif;font-size:80px;font-weight:700;color:var(--tb);line-height:1;animation:cdfade .7s ease;}
+.countdown-sub{font-family:'Oswald','Impact',sans-serif;font-size:13px;font-weight:700;color:var(--td);letter-spacing:3px;text-transform:uppercase;margin-top:6px;}
+@keyframes cdfade{from{opacity:0;transform:scale(1.25);}to{opacity:1;transform:scale(1);}}
+.box-outer{position:relative;width:240px;height:240px;margin-bottom:6px;}
+.box-label{position:absolute;font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:600;transition:color .5s;}
+.box-label-top{top:6px;left:50%;transform:translateX(-50%);}
+.box-label-right{right:4px;top:50%;transform:translateY(-50%) rotate(90deg);}
+.box-label-bottom{bottom:6px;left:50%;transform:translateX(-50%);}
+.box-label-left{left:4px;top:50%;transform:translateY(-50%) rotate(-90deg);}
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="aurora"></div>
+<div class="wvbg"><div class="wv"></div><div class="wv"></div><div class="wv"></div></div>
+<div class="pts" id="ptcl"></div>
+
+<div class="sndbtn" onclick="tglSnd()"><span id="sic">zvuk</span></div>
+<div class="footer"><span>Michal Soulak</span><span style="color:rgba(77,168,212,.18);">·</span><span>Breatheflow 1.0.3</span></div>
+
+<div class="app">
+
+  <!-- ══════════════ ONBOARDING ══════════════ -->
+  <div class="scr on" id="sc-ob">
+    <div style="padding-top:44px;text-align:center;margin-bottom:28px;">
+      <div style="display:inline-flex;align-items:center;justify-content:center;gap:14px;margin-bottom:6px;">
+        <svg width="128" height="128" viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;"><g transform="translate(340,200)" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"><path d="M-52,-105 Q-52,-170 0,-170 Q52,-170 52,-105 Q52,-53 0,-53 Q-52,-53 -52,-105 Z"/><circle cx="-18" cy="-115" r="9" fill="white" stroke="none"/><circle cx="18" cy="-115" r="9" fill="white" stroke="none"/><polygon points="-20,-92 20,-92 0,-60" fill="white" stroke="none"/><path d="M-52,-105 Q-56,-60 -52,80 Q-30,105 0,105 Q30,105 52,80 Q56,-60 52,-105"/><polygon points="-52,0 -90,55 -52,60" fill="white" stroke="none"/><polygon points="52,0 90,55 52,60" fill="white" stroke="none"/><polygon points="-28,105 -10,105 -20,128" fill="white" stroke="none"/><polygon points="28,105 10,105 20,128" fill="white" stroke="none"/></g></svg>
+        <div class="brand">Breathe<span>flow</span></div>
+      </div>
+      <div class="sub" style="margin-top:4px;">učíme tě dýchat</div>
+    </div>
+    <div class="gl" style="width:100%;padding:22px 18px;margin-bottom:14px;">
+      <label class="fl">Přezdívka</label>
+      <div class="fw">
+        <input type="text" class="fi" id="ob-nick" maxlength="20">
+        <div class="ph-hint" id="ph-hint"></div>
+      </div>
+      <label class="fl">Věk</label>
+      <div class="fw"><input type="number" class="fi" id="ob-age" placeholder="25" min="10" max="99"></div>
+      <label class="fl" style="margin-bottom:7px;">Pohlaví</label>
+      <div class="gg">
+        <button class="gbtn" onclick="selG(this,'m')">Muž</button>
+        <button class="gbtn" onclick="selG(this,'f')">Žena</button>
+        <button class="gbtn" onclick="selG(this,'x')">Jiné</button>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="saveProf()">Začít →</button>
+  </div>
+
+  <!-- ══════════════ DASHBOARD ══════════════ -->
+  <div class="scr" id="sc-dash">
+    <div style="height:20px;"></div>
+    <div style="width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div>
+        <div style="font-size:9px;color:var(--td);letter-spacing:2px;text-transform:uppercase;">Vítej zpět</div>
+        <div style="font-size:20px;font-weight:300;" id="d-name">—</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <svg width="76" height="76" viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;"><g transform="translate(340,200)" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"><path d="M-52,-105 Q-52,-170 0,-170 Q52,-170 52,-105 Q52,-53 0,-53 Q-52,-53 -52,-105 Z"/><circle cx="-18" cy="-115" r="9" fill="white" stroke="none"/><circle cx="18" cy="-115" r="9" fill="white" stroke="none"/><polygon points="-20,-92 20,-92 0,-60" fill="white" stroke="none"/><path d="M-52,-105 Q-56,-60 -52,80 Q-30,105 0,105 Q30,105 52,80 Q56,-60 52,-105"/><polygon points="-52,0 -90,55 -52,60" fill="white" stroke="none"/><polygon points="52,0 90,55 52,60" fill="white" stroke="none"/><polygon points="-28,105 -10,105 -20,128" fill="white" stroke="none"/><polygon points="28,105 10,105 20,128" fill="white" stroke="none"/></g></svg>
+        <button class="btn btn-g" style="width:auto;padding:7px 13px;" onclick="goOb()">Upravit</button>
+      </div>
+    </div>
+    <div class="sgrid4" style="margin-bottom:12px;">
+      <div class="sc"><div class="sv" id="d-tot">0</div><div class="sl2">Celkem lekcí</div></div>
+      <div class="sc"><div class="sv" id="d-best">—</div><div class="sl2">Nejlepší čas</div></div>
+      <div class="sc"><div class="sv" id="d-streak">0</div><div class="sl2">Dní v řadě</div></div>
+      <div class="sc"><div class="sv" id="d-conscious">0 min</div><div class="sl2">Vědomé dýchání</div></div>
+    </div>
+    <div style="font-size:9px;color:var(--td);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;align-self:flex-start;">Vyber cvičení</div>
+    <div class="exc" style="width:100%;margin-bottom:12px;">
+      <div class="ec" onclick="startHold()">
+        <div class="ec-text">
+          <div class="en">Maximální výdrž</div>
+          <div class="ed">Zadrž dech — potápěč tučňák + žebříček</div>
+          <div style="margin-top:4px;display:flex;align-items:center;gap:6px;"><span class="ebadge ebadge-avail">DOSTUPNÉ</span><span style="font-size:10px;color:var(--a);font-weight:600;" id="d-lc-hold"></span></div>
+        </div>
+        <span class="ec-arrow">›</span>
+      </div>
+      <div class="ec" onclick="showNavyPrep()">
+        <div class="ec-text">
+          <div class="en">Navy SEALs Work</div>
+          <div class="ed">Box breathing 4-4-4-4 — jako vojáci před zásahem</div>
+          <div style="margin-top:4px;display:flex;align-items:center;gap:6px;"><span class="ebadge ebadge-avail">DOSTUPNÉ</span><span style="font-size:10px;color:var(--a);font-weight:600;" id="d-lc-pres"></span></div>
+        </div>
+        <span class="ec-arrow">›</span>
+      </div>
+      <div class="ec" onclick="startStr()">
+        <div class="ec-text">
+          <div class="en">Práce se stresem</div>
+          <div class="ed">Technika 4-7-8</div>
+          <div style="margin-top:4px;display:flex;align-items:center;gap:6px;"><span class="ebadge ebadge-avail">DOSTUPNÉ</span><span style="font-size:10px;color:var(--a);font-weight:600;" id="d-lc-str"></span></div>
+        </div>
+        <span class="ec-arrow">›</span>
+      </div>
+      <div class="ec disabled">
+        <span class="ec-icon" style="filter:grayscale(1);opacity:.5;">️</span>
+        <div class="ec-text">
+          <div class="en" style="color:#666;">Tantrický dech</div>
+          <div class="ed">Hluboká dechová meditace</div>
+          <div style="margin-top:4px;"><span class="ebadge ebadge-soon">PŘIPRAVUJEME</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ HOLD ══════════════ -->
+  <div class="scr" id="sc-hold">
+    <div class="pb" style="margin-top:20px;"><div class="pf" style="width:55%"></div></div>
+    <div style="height:14px;"></div>
+    <svg width="92" height="92" viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;margin-bottom:8px;"><g transform="translate(340,200)" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"><path d="M-52,-105 Q-52,-170 0,-170 Q52,-170 52,-105 Q52,-53 0,-53 Q-52,-53 -52,-105 Z"/><circle cx="-18" cy="-115" r="9" fill="white" stroke="none"/><circle cx="18" cy="-115" r="9" fill="white" stroke="none"/><polygon points="-20,-92 20,-92 0,-60" fill="white" stroke="none"/><path d="M-52,-105 Q-56,-60 -52,80 Q-30,105 0,105 Q30,105 52,80 Q56,-60 52,-105"/><polygon points="-52,0 -90,55 -52,60" fill="white" stroke="none"/><polygon points="52,0 90,55 52,60" fill="white" stroke="none"/><polygon points="-28,105 -10,105 -20,128" fill="white" stroke="none"/><polygon points="28,105 10,105 20,128" fill="white" stroke="none"/></g></svg>
+    <div class="bub" id="h-bub">Připrav se — uvolni tělo.</div>
+    <div style="height:12px;"></div>
+    <div class="dots" style="margin-bottom:12px;">
+      <div class="dot on" id="hd0"></div><div class="dot" id="hd1"></div><div class="dot" id="hd2"></div>
+    </div>
+    <div class="dive-scene" id="dive-scene" style="display:none;margin-bottom:12px;">
+      <div class="ocean"></div>
+      <div class="ray" style="left:28%;height:200px;opacity:.5;transform:rotate(-8deg);"></div>
+      <div class="ray" style="left:50%;height:240px;transform:rotate(4deg);"></div>
+      <div class="ray" style="left:72%;height:180px;opacity:.45;transform:rotate(12deg);"></div>
+      <div class="dl" style="top:25%;"></div><div class="dlabel" style="top:calc(25% - 13px);" id="dl-1"></div>
+      <div class="dl" style="top:50%;"></div><div class="dlabel" style="top:calc(50% - 13px);" id="dl-2"></div>
+      <div class="dl" style="top:75%;"></div><div class="dlabel" style="top:calc(75% - 13px);" id="dl-3"></div>
+      <div class="dm"><div class="dmv" id="dive-m">0.0 m</div><div class="dml">HLOUBKA</div></div>
+      <div class="peng-diver" id="peng-diver">
+        <svg width="68" height="68" viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;"><g transform="translate(340,200)" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"><path d="M-52,-105 Q-52,-170 0,-170 Q52,-170 52,-105 Q52,-53 0,-53 Q-52,-53 -52,-105 Z"/><circle cx="-18" cy="-115" r="9" fill="white" stroke="none"/><circle cx="18" cy="-115" r="9" fill="white" stroke="none"/><polygon points="-20,-92 20,-92 0,-60" fill="white" stroke="none"/><path d="M-52,-105 Q-56,-60 -52,80 Q-30,105 0,105 Q30,105 52,80 Q56,-60 52,-105"/><polygon points="-52,0 -90,55 -52,60" fill="white" stroke="none"/><polygon points="52,0 90,55 52,60" fill="white" stroke="none"/><polygon points="-28,105 -10,105 -20,128" fill="white" stroke="none"/><polygon points="28,105 10,105 20,128" fill="white" stroke="none"/></g></svg>
+      </div>
+      <div id="bbls"></div>
+      <div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);text-align:center;">
+        <div style="font-size:38px;font-weight:300;color:var(--tb);line-height:1;" id="dive-time">0:00</div>
+        <div style="font-size:8px;color:var(--td);letter-spacing:2px;">VÝDRŽ</div>
+      </div>
+    </div>
+    <div class="twrap" id="norm-timer" style="margin-bottom:12px;">
+      <svg class="tsv" viewBox="0 0 220 220">
+        <circle class="trk" cx="110" cy="110" r="105"/>
+        <circle class="prg" id="h-prg" cx="110" cy="110" r="105"/>
+      </svg>
+      <div class="tin"><div class="tnum" id="h-num">12</div><div class="tlbl" id="h-lbl">příprava</div></div>
+    </div>
+    <button class="btn btn-stop" id="h-stop" style="display:none;" onclick="stopHold()">Vydechni — Zaznamenat</button>
+    <button class="btn btn-g" style="margin-top:7px;" onclick="abortEx()">Zrušit</button>
+  </div>
+
+  <!-- ══════════════ NAVY PREP ══════════════ -->
+  <div class="scr" id="sc-pres-prep">
+    <div class="pb" style="margin-top:20px;"><div class="pf" style="width:40%"></div></div>
+    <div style="height:16px;"></div>
+    <div style="font-size:9px;color:rgba(94,219,160,.55);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">Cvičení</div>
+    <div style="font-size:22px;font-weight:300;margin-bottom:18px;text-align:center;">Navy SEALs Work </div>
+    <div class="gl navy-prep">
+      <div class="navy-title">Metoda bojových jednotek</div>
+      <p class="navy-body">Vojáci tuto metodu používají před zásahem, výsadkem, rozhodujícím momentem. Nebo po extrémním stresu nebo výkonu. Není to žádná složitá technika. 4 kroky, které zvládneš vždy.</p>
+      <ul class="navy-benefits">
+        <li>Rychle uklidní nervový systém</li>
+        <li>Vrací tě do přítomnosti skrz rytmus</li>
+        <li>Synchronizuješ dech a srdeční rytmus</li>
+      </ul>
+    </div>
+    <div style="height:16px;"></div>
+    <button class="btn btn-navy" onclick="startNavyCountdown()">Spustit cvičení →</button>
+    <button class="btn btn-g" style="margin-top:8px;" onclick="goHome()">← Zpět</button>
+  </div>
+
+  <!-- ══════════════ NAVY BOX BREATHING ══════════════ -->
+  <div class="scr" id="sc-pres">
+    <div class="pb" style="margin-top:20px;"><div class="pf" style="width:55%"></div></div>
+    <div style="height:14px;"></div>
+    <svg width="92" height="92" viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;margin-bottom:8px;"><g transform="translate(340,200)" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"><path d="M-52,-105 Q-52,-170 0,-170 Q52,-170 52,-105 Q52,-53 0,-53 Q-52,-53 -52,-105 Z"/><circle cx="-18" cy="-115" r="9" fill="white" stroke="none"/><circle cx="18" cy="-115" r="9" fill="white" stroke="none"/><polygon points="-20,-92 20,-92 0,-60" fill="white" stroke="none"/><path d="M-52,-105 Q-56,-60 -52,80 Q-30,105 0,105 Q30,105 52,80 Q56,-60 52,-105"/><polygon points="-52,0 -90,55 -52,60" fill="white" stroke="none"/><polygon points="52,0 90,55 52,60" fill="white" stroke="none"/><polygon points="-28,105 -10,105 -20,128" fill="white" stroke="none"/><polygon points="28,105 10,105 20,128" fill="white" stroke="none"/></g></svg>
+    <div class="bub" id="p-bub">Navy SEALs Box Breathing.</div>
+    <div style="height:10px;"></div>
+    <div class="box-outer">
+      <div class="box-label box-label-top" id="lbl-top" style="color:rgba(94,219,160,.5);">NÁDECH</div>
+      <div class="box-label box-label-right" id="lbl-right" style="color:rgba(240,192,96,.5);">ZADRŽ</div>
+      <div class="box-label box-label-bottom" id="lbl-bottom" style="color:rgba(77,168,212,.5);">VÝDECH</div>
+      <div class="box-label box-label-left" id="lbl-left" style="color:rgba(240,192,96,.5);">ZADRŽ</div>
+      <svg width="400" height="400" viewBox="0 0 200 200" style="position:absolute;top:20px;left:20px;">
+        <path d="M30,30 Q30,22 38,22 L162,22 Q170,22 170,30" fill="none" stroke="rgba(94,219,160,.25)" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M170,30 L170,170" fill="none" stroke="rgba(240,192,96,.25)" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M170,170 Q170,178 162,178 L38,178 Q30,178 30,170" fill="none" stroke="rgba(77,168,212,.25)" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M30,170 L30,30" fill="none" stroke="rgba(240,192,96,.25)" stroke-width="3.5" stroke-linecap="round"/>
+        <circle id="box-dot" cx="30" cy="22" r="9" fill="#5edba0" filter="url(#gf2)"/>
+        <defs>
+          <filter id="gf2" x="-150%" y="-150%" width="400%" height="400%">
+            <feGaussianBlur stdDeviation="4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+      </svg>
+      <div style="position:absolute;inset:20px 20px 20px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;pointer-events:none;">
+        <div style="font-size:44px;font-weight:300;color:var(--tb);line-height:1;" id="p-num">4</div>
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;transition:color .4s;" id="p-lbl">NÁDECH</div>
+      </div>
+      <div class="countdown-overlay" id="pres-countdown" style="display:none;top:20px;left:20px;right:20px;bottom:20px;inset:20px;">
+        <div class="countdown-num" id="pres-cd-num">3</div>
+        <div class="countdown-sub" id="pres-cd-sub">připrav se</div>
+      </div>
+    </div>
+    <div class="dots" style="margin-bottom:8px;margin-top:4px;">
+      <div class="dot on" id="pd0"></div><div class="dot" id="pd1"></div><div class="dot" id="pd2"></div><div class="dot" id="pd3"></div>
+    </div>
+    <div style="font-size:11px;color:var(--td);margin-bottom:14px;" id="p-cyc">Kolo 1 / 6</div>
+    <button class="btn btn-stop" onclick="stopPres()">Ukončit</button>
+  </div>
+
+  <!-- ══════════════ STRESS (4-7-8) ══════════════ -->
+  <div class="scr" id="sc-str">
+    <div class="pb" style="margin-top:20px;"><div class="pf" style="width:55%"></div></div>
+    <div style="height:14px;"></div>
+    <svg width="92" height="92" viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;margin-bottom:8px;"><g transform="translate(340,200)" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"><path d="M-52,-105 Q-52,-170 0,-170 Q52,-170 52,-105 Q52,-53 0,-53 Q-52,-53 -52,-105 Z"/><circle cx="-18" cy="-115" r="9" fill="white" stroke="none"/><circle cx="18" cy="-115" r="9" fill="white" stroke="none"/><polygon points="-20,-92 20,-92 0,-60" fill="white" stroke="none"/><path d="M-52,-105 Q-56,-60 -52,80 Q-30,105 0,105 Q30,105 52,80 Q56,-60 52,-105"/><polygon points="-52,0 -90,55 -52,60" fill="white" stroke="none"/><polygon points="52,0 90,55 52,60" fill="white" stroke="none"/><polygon points="-28,105 -10,105 -20,128" fill="white" stroke="none"/><polygon points="28,105 10,105 20,128" fill="white" stroke="none"/></g></svg>
+    <div class="bub" id="s-bub">4-7-8 — nejrychlejší cesta ke klidu.</div>
+    <div style="height:12px;"></div>
+    <div class="orb" id="s-orb" style="margin-bottom:10px;"><div class="orb-c" id="s-orbc"></div></div>
+    <div style="text-align:center;margin-bottom:6px;">
+      <div style="font-size:44px;font-weight:300;color:var(--tb);line-height:1;" id="s-num">4</div>
+      <div style="font-size:9px;color:var(--td);letter-spacing:2px;text-transform:uppercase;margin-top:2px;" id="s-lbl">nádech</div>
+    </div>
+    <div class="dots" style="margin-bottom:8px;">
+      <div class="dot on" id="sd0"></div><div class="dot" id="sd1"></div><div class="dot" id="sd2"></div>
+    </div>
+    <div style="font-size:11px;color:var(--td);margin-bottom:14px;" id="s-cyc">Kolo 1 / 4</div>
+    <button class="btn btn-stop" onclick="stopStr()">Ukončit</button>
+  </div>
+
+  <!-- ══════════════ RESULTS ══════════════ -->
+  <div class="scr" id="sc-res">
+    <div class="pb" style="margin-top:20px;"><div class="pf" style="width:100%"></div></div>
+    <div style="height:14px;"></div>
+    <svg width="104" height="104" viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;margin-bottom:8px;"><g transform="translate(340,200)" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"><path d="M-52,-105 Q-52,-170 0,-170 Q52,-170 52,-105 Q52,-53 0,-53 Q-52,-53 -52,-105 Z"/><circle cx="-18" cy="-115" r="9" fill="white" stroke="none"/><circle cx="18" cy="-115" r="9" fill="white" stroke="none"/><polygon points="-20,-92 20,-92 0,-60" fill="white" stroke="none"/><path d="M-52,-105 Q-56,-60 -52,80 Q-30,105 0,105 Q30,105 52,80 Q56,-60 52,-105"/><polygon points="-52,0 -90,55 -52,60" fill="white" stroke="none"/><polygon points="52,0 90,55 52,60" fill="white" stroke="none"/><polygon points="-28,105 -10,105 -20,128" fill="white" stroke="none"/><polygon points="28,105 10,105 20,128" fill="white" stroke="none"/></g></svg>
+    <div style="font-size:62px;font-weight:300;color:var(--tb);letter-spacing:-3px;line-height:1;text-align:center;" id="r-time">0:00</div>
+    <div style="font-size:9px;color:var(--td);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;" id="r-unit">tvůj čas</div>
+    <div style="font-size:16px;font-weight:300;text-align:center;margin-bottom:3px;" id="r-mot"></div>
+    <div style="font-size:12px;color:var(--td);text-align:center;margin-bottom:16px;" id="r-sub"></div>
+    <div class="sgrid3" style="margin-bottom:14px;">
+      <div class="sc"><div class="sv" id="r-best">—</div><div class="sl2">Osobní rekord</div></div>
+      <div class="sc"><div class="sv" id="r-atts">1</div><div class="sl2">Pokusů</div></div>
+      <div class="sc"><div class="sv" id="r-rank">#—</div><div class="sl2">Pořadí</div></div>
+    </div>
+    <div class="ff" style="margin-bottom:12px;"><div class="fft">Víte, že?</div><div id="r-ff"></div></div>
+    <div class="gl" style="width:100%;padding:14px 12px;margin-bottom:12px;">
+      <div class="tabs">
+        <div class="tab on" onclick="swTab('lb')">Žebříček </div>
+        <div class="tab" onclick="swTab('hist')">Moje historie</div>
+      </div>
+      <div id="t-lb">
+        <div style="font-size:8px;color:var(--td);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;text-align:center;">Globální žebříček</div>
+        <div id="lb-list"></div>
+      </div>
+      <div id="t-hist" style="display:none;">
+        <div style="font-size:8px;color:var(--td);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;text-align:center;">Tvoje pokusy</div>
+        <div id="hist-list"></div>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="tryAgain()">Zkusit znovu →</button>
+    <button class="btn btn-g" style="margin-top:7px;" onclick="goHome()">← Domů</button>
+  </div>
+
+  <!-- ══════════════ CALM DONE ══════════════ -->
+  <div class="scr" id="sc-calm">
+    <div style="height:50px;"></div>
+    <svg width="128" height="128" viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;margin-bottom:14px;"><g transform="translate(340,200)" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"><path d="M-52,-105 Q-52,-170 0,-170 Q52,-170 52,-105 Q52,-53 0,-53 Q-52,-53 -52,-105 Z"/><circle cx="-18" cy="-115" r="9" fill="white" stroke="none"/><circle cx="18" cy="-115" r="9" fill="white" stroke="none"/><polygon points="-20,-92 20,-92 0,-60" fill="white" stroke="none"/><path d="M-52,-105 Q-56,-60 -52,80 Q-30,105 0,105 Q30,105 52,80 Q56,-60 52,-105"/><polygon points="-52,0 -90,55 -52,60" fill="white" stroke="none"/><polygon points="52,0 90,55 52,60" fill="white" stroke="none"/><polygon points="-28,105 -10,105 -20,128" fill="white" stroke="none"/><polygon points="28,105 10,105 20,128" fill="white" stroke="none"/></g></svg>
+    <div style="font-size:24px;font-weight:300;text-align:center;margin-bottom:6px;" id="calm-t">Výborně!</div>
+    <div style="font-size:13px;color:var(--tm);text-align:center;line-height:1.7;max-width:280px;margin-bottom:22px;" id="calm-m"></div>
+    <div class="ff" style="margin-bottom:18px;"><div class="fft">Víte, že?</div><div id="calm-ff"></div></div>
+    <div class="gl" style="width:100%;padding:16px 14px;margin-bottom:16px;">
+      <div style="font-size:8px;color:var(--td);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;text-align:center;">Jak se teď cítíš?</div>
+      <div class="mood-grid">
+        <div class="mood-btn" style="background:rgba(94,219,160,.07);border-color:rgba(94,219,160,.18);color:var(--gn);" onclick="logMood(this,'V klidu')"><br>V klidu</div>
+        <div class="mood-btn" style="background:rgba(77,168,212,.07);border-color:rgba(77,168,212,.18);color:var(--a);" onclick="logMood(this,'Tady a teď')"><br>Tady a teď</div>
+        <div class="mood-btn" style="background:rgba(240,192,96,.07);border-color:rgba(240,192,96,.18);color:var(--am);" onclick="logMood(this,'Raketově')"><br>Raketově</div>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="tryAgain()">Zkusit znovu →</button>
+    <button class="btn btn-g" style="margin-top:7px;" onclick="goHome()">← Domů</button>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════ PENGUIN NAMES ═══════════════════════════
+const PENGUIN_NAMES = [
+  'adeliae Pygoscelis',
+  'antarcticus Pygoscelis',
+  'papua Pygoscelis',
+  'magellanicus Spheniscus',
+  'humboldti Spheniscus',
+  'minor Eudyptula',
+  'chrysolophus Eudyptes',
+  'patagonicus Aptenodytes'
+];
+
+// ═══════════════════════════ STATE ═══════════════════════════
+let P = { nick: '', age: '', gender: '' };
+let sndOn = true, audioCtx = null;
+let holdIv = null, boxIv = null, strIv = null, bblIv = null, cdIv = null, dotAnimIv = null;
+let cdCancelled = false;
+let holdElapsed = 0, holdRunning = false;
+let boxRunning = false, boxPhaseIdx = 0, boxTick = 0, boxCycle = 0;
+let strRunning = false, sPhaseIdx = 0, sTick = 0, sCycle = 0;
+const SPEED = 2.222, CIRC = 659.73, BOX_TOTAL = 6;
+
+let glb = lsGet('leaderboard') || [
+  { name: 'IceMaster', time: 312 }, { name: 'ArcticFox', time: 248 },
+  { name: 'Wim_H', time: 227 }, { name: 'FjordBreath', time: 195 }, { name: 'NordWave', time: 178 }
+];
+
+const FACTS = [
+  'Tučňáci pod vodou „létají" – jejich křídla fungují jako perfektní pohon, ne na vzduch, ale na vodu.',
+  'Tučňáci běžně vydrží pod vodou 5–10 minut, císařský tučňák klidně přes 20.',
+  'Tučňáci si kyslík ukládají hlavně do svalů, takže nejsou závislí jen na plicích.',
+  'Tučňáci při ponoru zpomalí tep a omezí méně důležité funkce, aby šetřili kyslík.',
+  'Tučňáci zvládají extrémní tlak – jejich plíce se při hloubce bezpečně „zmenší".',
+  'Tučňáci uvolňují mikrobubliny z peří, které snižují odpor vody a zrychlují je.',
+  'Tučňáci při rychlé plavbě vyskakují nad hladinu pro nádech, aniž by zpomalili.',
+  'Tučňáci ve vodě vidí lépe než na souši – tam jsou lovci, ne nemotory.',
+  'Tučňáci pod vodou jsou extrémně efektivní – kombinace freedivera a torpéda.'
+];
+
+const BPHASES = [
+  { n: 'NÁDECH', d: 4, dot: 'pd0', color: '#5edba0', dotColor: '#5edba0', lblActive: 'lbl-top' },
+  { n: 'ZADRŽ',  d: 4, dot: 'pd1', color: '#f0c060', dotColor: '#f0c060', lblActive: 'lbl-right' },
+  { n: 'VÝDECH', d: 4, dot: 'pd2', color: '#4da8d4', dotColor: '#4da8d4', lblActive: 'lbl-bottom' },
+  { n: 'ZADRŽ',  d: 4, dot: 'pd3', color: '#f0c060', dotColor: '#f0c060', lblActive: 'lbl-left' }
+];
+const BPATHS = [
+  [{ x: 30, y: 22 }, { x: 170, y: 22 }],
+  [{ x: 170, y: 22 }, { x: 170, y: 178 }],
+  [{ x: 170, y: 178 }, { x: 30, y: 178 }],
+  [{ x: 30, y: 178 }, { x: 30, y: 22 }]
+];
+const BMSGS = ['Pomalu se nadechni nosem...', 'Zadrž — buď přítomný...', 'Pomalu vydechni ústy...', 'Zadrž — vnímej ticho...'];
+const LBL_COLORS = { 'lbl-top': 'rgba(94,219,160,.9)', 'lbl-right': 'rgba(240,192,96,.9)', 'lbl-bottom': 'rgba(77,168,212,.9)', 'lbl-left': 'rgba(240,192,96,.9)' };
+const LBL_DIM = { 'lbl-top': 'rgba(94,219,160,.28)', 'lbl-right': 'rgba(240,192,96,.28)', 'lbl-bottom': 'rgba(77,168,212,.28)', 'lbl-left': 'rgba(240,192,96,.28)' };
+
+// ═══════════════════════════ LOCALSTORAGE ═══════════════════════════
+function lsGet(k) { try { return JSON.parse(localStorage.getItem('bf_' + k)); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem('bf_' + k, JSON.stringify(v)); } catch (e) { } }
+function getHist() { return lsGet('history') || []; }
+function addHist(e) { const h = getHist(); h.unshift(e); lsSet('history', h.slice(0, 100)); }
+function getLc() { return lsGet('lessons') || { hold: 0, pres: 0, str: 0 }; }
+function incLc(t) { const l = getLc(); l[t] = (l[t] || 0) + 1; lsSet('lessons', l); }
+function getStreak() {
+  const h = getHist(); if (!h.length) return 0;
+  const days = new Set(h.map(e => e.date));
+  const today = new Date().toLocaleDateString('cs-CZ');
+  if (!days.has(today)) return 0;
+  let s = 0, d = new Date();
+  while (days.has(d.toLocaleDateString('cs-CZ'))) { s++; d.setDate(d.getDate() - 1); }
+  return s;
+}
+function getTotalConsciousMin() {
+  const h = getHist();
+  const sec = h.reduce((a, e) => {
+    if (e.type === 'hold' && e.time) return a + e.time;
+    if (e.type === 'pres') return a + (BOX_TOTAL * 16);
+    if (e.type === 'str') return a + (4 * 19);
+    return a;
+  }, 0);
+  const m = Math.floor(sec / 60);
+  return m > 0 ? m + ' min' : sec + 's';
+}
+function fmt(s) { return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+
+// ═══════════════════════════ PLACEHOLDER ═══════════════════════════
+function setRandomPlaceholder() {
+  const name = PENGUIN_NAMES[Math.floor(Math.random() * PENGUIN_NAMES.length)];
+  const el = document.getElementById('ob-nick');
+  el.placeholder = name;
+  const hint = document.getElementById('ph-hint');
+  if (hint) hint.textContent = 'nebo použij tučňáčí jméno ↑';
+}
+
+// ═══════════════════════════ PARTICLES ═══════════════════════════
+for (let i = 0; i < 14; i++) setTimeout(() => {
+  const p = document.createElement('div'); p.className = 'pt';
+  const s = Math.random() * 2.5 + .8;
+  p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random() * 100}%;animation-duration:${14 + Math.random() * 18}s;animation-delay:${Math.random() * 6}s;opacity:0;`;
+  document.getElementById('ptcl').appendChild(p); setTimeout(() => p.remove(), 38000);
+}, i * 250);
+setInterval(() => {
+  const p = document.createElement('div'); p.className = 'pt';
+  const s = Math.random() * 2 + .6;
+  p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random() * 100}%;animation-duration:${14 + Math.random() * 16}s;opacity:0;`;
+  document.getElementById('ptcl').appendChild(p); setTimeout(() => p.remove(), 34000);
+}, 2800);
+
+// ═══════════════════════════ AUDIO ═══════════════════════════
+function getAC() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+function tone(fr, dur = .18, tp = 'sine', vol = .14) {
+  if (!sndOn) return;
+  try {
+    const ac = getAC(), o = ac.createOscillator(), g = ac.createGain();
+    o.connect(g); g.connect(ac.destination); o.frequency.value = fr; o.type = tp;
+    g.gain.setValueAtTime(0, ac.currentTime); g.gain.linearRampToValueAtTime(vol, ac.currentTime + .02);
+    g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + dur);
+    o.start(ac.currentTime); o.stop(ac.currentTime + dur + .05);
+  } catch (e) { }
+}
+function chime(fs, gap = .12) { fs.forEach((f, i) => setTimeout(() => tone(f, .35, 'sine', .12), i * gap * 1000)); }
+function success() { chime([523, 659, 784, 1047]); }
+function tglSnd() { sndOn = !sndOn; document.getElementById('sic').textContent = sndOn ? 'zvuk' : 'ticho'; }
+
+// ═══════════════════════════ NAV ═══════════════════════════
+function show(id) { document.querySelectorAll('.scr').forEach(s => s.classList.remove('on')); document.getElementById(id).classList.add('on'); window.scrollTo(0, 0); }
+function selG(btn, g) { document.querySelectorAll('.gbtn').forEach(b => b.classList.remove('on')); btn.classList.add('on'); P.gender = g; }
+function goHome() { stopAll(); refreshDash(); show('sc-dash'); }
+function goOb() {
+  setRandomPlaceholder();
+  show('sc-ob');
+  document.getElementById('ob-nick').value = P.nick;
+  document.getElementById('ob-age').value = P.age;
+  document.querySelectorAll('.gbtn').forEach(b => {
+    const map = { 'Muž': 'm', 'Žena': 'f', 'Jiné': 'x' };
+    b.classList.toggle('on', map[b.textContent] === P.gender);
+  });
+}
+function abortEx() { stopAll(); goHome(); }
+function tryAgain() { stopAll(); goHome(); }
+function showNavyPrep() { stopAll(); show('sc-pres-prep'); }
+
+// ═══════════════════════════ PROFILE ═══════════════════════════
+function saveProf() {
+  const el = document.getElementById('ob-nick');
+  P.nick = el.value.trim() || el.placeholder;
+  P.age = document.getElementById('ob-age').value || '?';
+  if (!P.gender) P.gender = 'm';
+  lsSet('profile', P); refreshDash(); show('sc-dash');
+}
+
+function refreshDash() {
+  document.getElementById('d-name').textContent = P.nick;
+  const h = getHist().filter(e => e.type === 'hold');
+  const best = h.length ? Math.max(...h.map(e => e.time)) : 0;
+  document.getElementById('d-best').textContent = best ? fmt(best) : '—';
+  document.getElementById('d-tot').textContent = getHist().length;
+  document.getElementById('d-streak').textContent = getStreak() + '';
+  document.getElementById('d-conscious').textContent = getTotalConsciousMin();
+  const lc = getLc();
+  document.getElementById('d-lc-hold').textContent = lc.hold ? lc.hold + '×' : '';
+  document.getElementById('d-lc-pres').textContent = lc.pres ? lc.pres + '×' : '';
+  document.getElementById('d-lc-str').textContent = lc.str ? lc.str + '×' : '';
+}
+
+
+// ═══════════════════════════ HOLD ═══════════════════════════
+function setHPrg(f) { document.getElementById('h-prg').style.strokeDashoffset = (CIRC * (1 - f)).toFixed(2); }
+function setHDots(i) { for (let d = 0; d < 3; d++) document.getElementById('hd' + d).classList.toggle('on', d === i); }
+
+function startHold() {
+  show('sc-hold'); holdRunning = true; holdElapsed = 0;
+  document.getElementById('norm-timer').style.display = 'block';
+  document.getElementById('dive-scene').style.display = 'none';
+  document.getElementById('h-stop').style.display = 'none';
+  document.getElementById('h-prg').classList.remove('hl', 'ex');
+  document.getElementById('h-prg').style.transform = '';
+  setHPrg(1); setHDots(0);
+  document.getElementById('h-num').textContent = '10'; document.getElementById('h-lbl').textContent = 'příprava';
+  document.getElementById('h-bub').textContent = 'Pohodlně se usaď a uvolni tělo...';
+  runH0();
+}
+function runH0() { let t = 10; setHPrg(1); clearInterval(holdIv); holdIv = setInterval(() => { if (!holdRunning) { clearInterval(holdIv); return; } t--; document.getElementById('h-num').textContent = t; setHPrg(t / 10); if (t <= 3) tone(330, .1, 'sine', .08); if (t <= 0) { clearInterval(holdIv); runH1(); } }, 1000); }
+function runH1() { setHDots(1); document.getElementById('h-bub').textContent = 'Pomalu, ale zhluboka se nadechni...'; document.getElementById('h-lbl').textContent = 'nádech'; let t = 6; document.getElementById('h-num').textContent = t; setHPrg(0); tone(528, .25); clearInterval(holdIv); holdIv = setInterval(() => { if (!holdRunning) { clearInterval(holdIv); return; } t--; document.getElementById('h-num').textContent = t; setHPrg((6 - t) / 6); if (t <= 3) document.getElementById('h-bub').textContent = 'Stále... hlouběji...'; if (t <= 0) { clearInterval(holdIv); runH1b(); } }, 1000); }
+function runH1b() { document.getElementById('h-bub').textContent = 'Zadrž dech, ponor ↓'; document.getElementById('h-lbl').textContent = 'ponor'; document.getElementById('h-num').textContent = '↓'; document.getElementById('h-prg').classList.add('ex'); tone(392, .3); setTimeout(() => tone(330, .3), 280); setTimeout(() => tone(262, .4), 560); setTimeout(() => { document.getElementById('h-prg').classList.remove('ex'); runH2(); }, 3000); }
+function runH2() {
+  setHDots(2); document.getElementById('norm-timer').style.display = 'none'; document.getElementById('dive-scene').style.display = 'block'; document.getElementById('h-stop').style.display = 'block'; document.getElementById('h-prg').classList.add('hl'); document.getElementById('h-bub').textContent = 'Zadrž dech — tučňák se noří! ️'; tone(528, .3);
+  const d1 = Math.round(SPEED * 25), d2 = Math.round(SPEED * 50), d3 = Math.round(SPEED * 90);
+  document.getElementById('dl-1').textContent = d1 + 'm'; document.getElementById('dl-2').textContent = d2 + 'm'; document.getElementById('dl-3').textContent = d3 + 'm';
+  const diver = document.getElementById('peng-diver'); diver.style.animation = 'none'; void diver.offsetWidth; diver.style.animation = 'dv 120s linear forwards';
+  clearInterval(bblIv); bblIv = setInterval(() => { if (!holdRunning) { clearInterval(bblIv); return; } const b = document.createElement('div'); b.className = 'bbl'; const s = 4 + Math.random() * 7; b.style.cssText = `width:${s}px;height:${s}px;left:${40 + Math.random() * 20}%;bottom:${10 + Math.random() * 30}%;animation-delay:${Math.random() * .8}s;animation-duration:${1.8 + Math.random() * .7}s;`; document.getElementById('bbls').appendChild(b); setTimeout(() => b.remove(), 3000); }, 450);
+  const hs = Date.now(); holdElapsed = 0; clearInterval(holdIv);
+  holdIv = setInterval(() => {
+    if (!holdRunning) { clearInterval(holdIv); return; }
+    holdElapsed = Math.floor((Date.now() - hs) / 1000);
+    document.getElementById('dive-time').textContent = fmt(holdElapsed);
+    document.getElementById('dive-m').textContent = (holdElapsed * SPEED).toFixed(1) + ' m';
+    if (holdElapsed === 30) { document.getElementById('h-bub').textContent = '30s — ' + Math.round(30 * SPEED) + 'm pod hladinou!'; tone(528, .28); }
+    if (holdElapsed === 60) { document.getElementById('h-bub').textContent = 'Minuta! ' + Math.round(60 * SPEED) + 'm hluboce!'; chime([440, 523]); }
+    if (holdElapsed === 90) { document.getElementById('h-bub').textContent = Math.round(90 * SPEED) + 'm — nadprůměrný výkon!'; chime([440, 523, 659]); }
+    if (holdElapsed === 120) { document.getElementById('h-bub').textContent = '2 minuty! Světová třída!'; success(); }
+  }, 1000);
+}
+function stopHold() {
+  if (!holdRunning) return; holdRunning = false; clearInterval(holdIv); clearInterval(bblIv);
+  success(); incLc('hold');
+  addHist({ type: 'hold', time: holdElapsed, date: new Date().toLocaleDateString('cs-CZ'), name: P.nick });
+  showHoldRes(holdElapsed);
+}
+function showHoldRes(sec) {
+  document.getElementById('r-time').textContent = fmt(sec);
+  document.getElementById('r-unit').textContent = `tvůj čas · ${(sec * SPEED).toFixed(1)}m hloubka `;
+  let mot, sub;
+  if (sec < 30) { mot = 'Dobrý start!'; sub = 'Vědomě dýchat znamená žít.'; }
+  else if (sec < 60) { mot = 'Solidní výkon!'; sub = 'Vědomě dýchat znamená žít.'; }
+  else if (sec < 90) { mot = 'Impresivní výdrž!'; sub = 'Vědomě dýchat znamená žít.'; }
+  else if (sec < 120) { mot = 'Mistr dechu!'; sub = 'Vědomě dýchat znamená žít.'; }
+  else { mot = 'Legendární výkon!'; sub = 'Vědomě dýchat znamená žít. '; }
+  document.getElementById('r-mot').textContent = mot; document.getElementById('r-sub').textContent = sub;
+  const h = getHist().filter(e => e.type === 'hold');
+  document.getElementById('r-best').textContent = h.length ? fmt(Math.max(...h.map(e => e.time))) : '—';
+  document.getElementById('r-atts').textContent = h.length;
+  glb = glb.filter(e => !e.isMe); glb.push({ name: P.nick, time: sec, isMe: true }); glb.sort((a, b) => b.time - a.time);
+  lsSet('leaderboard', glb.map(e => ({ name: e.name, time: e.time })));
+  document.getElementById('r-rank').textContent = '#' + (glb.findIndex(e => e.isMe) + 1);
+  renderLB(); renderHist(); swTab('lb');
+  document.getElementById('r-ff').textContent = FACTS[Math.floor(Math.random() * FACTS.length)];
+  show('sc-res');
+}
+function renderLB() { const el = document.getElementById('lb-list'); el.innerHTML = ''; const m = ['', '', '']; glb.slice(0, 8).forEach((e, i) => { const r = document.createElement('div'); r.className = 'lbrow' + (e.isMe ? ' me' : ''); r.innerHTML = `<span style="font-size:12px;color:var(--td);width:20px;text-align:center;">${i < 3 ? m[i] : (i + 1) + '.'}</span><span style="font-size:13px;color:var(--tm);flex:1;">${e.name}${e.isMe ? '<span style="font-size:9px;color:var(--a);margin-left:4px;font-weight:700;">TY</span>' : ''}</span><span style="font-size:13px;color:var(--tb);font-weight:600;">${fmt(e.time)}</span>`; el.appendChild(r); }); }
+function renderHist() { const el = document.getElementById('hist-list'); el.innerHTML = ''; getHist().filter(e => e.type === 'hold').slice(0, 6).forEach(h => { const r = document.createElement('div'); r.style.cssText = 'display:flex;justify-content:space-between;padding:7px 11px;background:rgba(77,168,212,.04);border-radius:8px;font-size:12px;color:var(--td);margin-bottom:4px;'; r.innerHTML = `<span>${h.date}</span><span style="color:var(--tm);font-weight:600;">${fmt(h.time)}</span>`; el.appendChild(r); }); }
+function swTab(t) { document.querySelectorAll('.tab').forEach((tab, i) => tab.classList.toggle('on', (t === 'lb' && i === 0) || (t === 'hist' && i === 1))); document.getElementById('t-lb').style.display = t === 'lb' ? 'block' : 'none'; document.getElementById('t-hist').style.display = t === 'hist' ? 'block' : 'none'; }
+
+// ═══════════════════════════ NAVY COUNTDOWN ═══════════════════════════
+function startNavyCountdown() {
+  show('sc-pres'); boxRunning = false; cdCancelled = false;
+  document.getElementById('pres-countdown').style.display = 'flex';
+  const steps = ['3', '2', '1', 'START']; let i = 0;
+  const showStep = () => {
+    const el = document.getElementById('pres-cd-num'); el.textContent = steps[i];
+    el.style.animation = 'none'; void el.offsetWidth; el.style.animation = 'cdfade .7s ease';
+    document.getElementById('pres-cd-sub').textContent = i < 3 ? 'připrav se' : 'pojď do toho';
+    tone(i < 3 ? 440 : 659, i < 3 ? .12 : .3, i < 3 ? 'square' : 'sine', i < 3 ? .1 : .16);
+  };
+  showStep(); clearInterval(cdIv);
+  cdIv = setInterval(() => {
+    i++;
+    if (i < steps.length) { showStep(); }
+    if (i === steps.length - 1) { setTimeout(() => { clearInterval(cdIv); document.getElementById('pres-countdown').style.display = 'none'; if (!cdCancelled) startPres(); }, 900); }
+  }, 1000);
+}
+
+// ═══════════════════════════ BOX BREATHING ═══════════════════════════
+function startPres() { boxRunning = true; boxPhaseIdx = 0; boxTick = 0; boxCycle = 0; updBP(); clearInterval(boxIv); boxIv = setInterval(tickBox, 1000); }
+function updBP() {
+  const ph = BPHASES[boxPhaseIdx];
+  document.getElementById('p-num').textContent = ph.d;
+  document.getElementById('p-lbl').textContent = ph.n;
+  document.getElementById('p-lbl').style.color = ph.color;
+  document.getElementById('box-dot').setAttribute('fill', ph.dotColor);
+  ['lbl-top', 'lbl-right', 'lbl-bottom', 'lbl-left'].forEach(id => {
+    document.getElementById(id).style.color = id === ph.lblActive ? LBL_COLORS[id] : LBL_DIM[id];
+    document.getElementById(id).style.fontWeight = id === ph.lblActive ? '700' : '600';
+  });
+  document.querySelectorAll('[id^="pd"]').forEach(d => d.classList.remove('on'));
+  document.getElementById(ph.dot).classList.add('on');
+  document.getElementById('p-bub').textContent = BMSGS[boxPhaseIdx];
+  tone(528, .2); animDot(boxPhaseIdx, ph.d);
+}
+function animDot(pi, dur) {
+  clearInterval(dotAnimIv);
+  const path = BPATHS[pi], dot = document.getElementById('box-dot'), steps = dur * 20; let st = 0;
+  dotAnimIv = setInterval(() => {
+    if (!boxRunning) { clearInterval(dotAnimIv); return; }
+    st++; const t = Math.min(st / steps, 1);
+    dot.setAttribute('cx', (path[0].x + (path[1].x - path[0].x) * t).toFixed(1));
+    dot.setAttribute('cy', (path[0].y + (path[1].y - path[0].y) * t).toFixed(1));
+    if (st >= steps) clearInterval(dotAnimIv);
+  }, 50);
+}
+function tickBox() { if (!boxRunning) return; boxTick++; const rem = BPHASES[boxPhaseIdx].d - boxTick; document.getElementById('p-num').textContent = rem > 0 ? rem : ''; if (boxTick >= BPHASES[boxPhaseIdx].d) { boxTick = 0; boxPhaseIdx = (boxPhaseIdx + 1) % 4; if (boxPhaseIdx === 0) { boxCycle++; if (boxCycle >= BOX_TOTAL) { stopPres(true); return; } document.getElementById('p-cyc').textContent = `Kolo ${Math.min(boxCycle + 1, BOX_TOTAL)} / ${BOX_TOTAL}`; } updBP(); } }
+function stopPres(done) { boxRunning = false; cdCancelled = true; clearInterval(boxIv); clearInterval(dotAnimIv); clearInterval(cdIv); incLc('pres'); addHist({ type: 'pres', date: new Date().toLocaleDateString('cs-CZ') }); if (done) success(); showCalm(done ? '6 kol Navy SEALs Box Breathingu dokončeno. Systém uklidněn.' : 'Dobrá práce! Vědomě dýchat znamená žít.', done ? 'Navy SEALs Work — splněno ' : 'Navy SEALs Work'); }
+
+// ═══════════════════════════ 4-7-8 ═══════════════════════════
+const SPHASES = [{ n: 'Nádech', d: 4 }, { n: 'Zadrž', d: 7 }, { n: 'Výdech', d: 8 }];
+const SMSGS = ['Nosem, pomalu a hluboce...', 'Zadrž — nech klid přijít...', 'Ústy, plynule a úplně...'];
+function startStr() { show('sc-str'); strRunning = true; sPhaseIdx = 0; sTick = 0; sCycle = 0; updSP(); clearInterval(strIv); strIv = setInterval(tickStr, 1000); }
+function updSP() { const ph = SPHASES[sPhaseIdx]; document.getElementById('s-num').textContent = ph.d; document.getElementById('s-lbl').textContent = ph.n.toUpperCase(); document.querySelectorAll('[id^="sd"]').forEach(d => d.classList.remove('on')); document.getElementById('sd' + sPhaseIdx).classList.add('on'); document.getElementById('s-bub').textContent = SMSGS[sPhaseIdx]; tone(528, .22); const orb = document.getElementById('s-orb'), core = document.getElementById('s-orbc'); if (sPhaseIdx === 0) { orb.style.transform = 'scale(1.08)'; orb.style.borderColor = 'rgba(77,168,212,.38)'; core.style.transform = 'scale(1.2)'; } else if (sPhaseIdx === 1) { orb.style.transform = 'scale(1.14)'; orb.style.borderColor = 'rgba(126,232,212,.35)'; core.style.transform = 'scale(1.3)'; } else { orb.style.transform = 'scale(.87)'; orb.style.borderColor = 'rgba(240,192,96,.28)'; core.style.transform = 'scale(.65)'; } }
+function tickStr() { if (!strRunning) return; sTick++; const rem = SPHASES[sPhaseIdx].d - sTick; document.getElementById('s-num').textContent = rem > 0 ? rem : ''; if (sTick >= SPHASES[sPhaseIdx].d) { sTick = 0; sPhaseIdx = (sPhaseIdx + 1) % 3; if (sPhaseIdx === 0) { sCycle++; document.getElementById('s-cyc').textContent = `Kolo ${sCycle + 1} / 4`; if (sCycle >= 4) { stopStr(true); return; } } updSP(); } }
+function stopStr(done) { strRunning = false; clearInterval(strIv); incLc('str'); addHist({ type: 'str', date: new Date().toLocaleDateString('cs-CZ') }); if (done) success(); showCalm(done ? '4 kola 4-7-8 dokončena! Parasympatický systém aktivován.' : 'Dobrá práce! Vědomě dýchat znamená žít.', done ? 'Stres — splněno ' : 'Stres'); }
+
+// ═══════════════════════════ CALM DONE ═══════════════════════════
+function showCalm(msg, title) { document.getElementById('calm-t').textContent = title; document.getElementById('calm-m').textContent = msg; document.getElementById('calm-ff').textContent = FACTS[Math.floor(Math.random() * FACTS.length)]; show('sc-calm'); }
+function logMood(el, mood) { document.querySelectorAll('.mood-btn').forEach(d => { d.style.opacity = '.45'; d.style.transform = ''; }); el.style.opacity = '1'; el.style.transform = 'scale(1.06)'; setTimeout(() => document.getElementById('calm-m').textContent = 'Nálada: ' + mood + ' — zaznamenáno!', 220); }
+
+// ═══════════════════════════ STOP ALL ═══════════════════════════
+function stopAll() { holdRunning = false; boxRunning = false; strRunning = false; clearInterval(holdIv); clearInterval(boxIv); clearInterval(strIv); clearInterval(bblIv); clearInterval(cdIv); clearInterval(dotAnimIv); }
+
+// ═══════════════════════════ INIT ═══════════════════════════
+(function init() {
+  setRandomPlaceholder();
+  const p = lsGet('profile');
+  if (p && p.nick) { P = p; refreshDash(); show('sc-dash'); }
+})();
+</script>
+</body>
+</html>
